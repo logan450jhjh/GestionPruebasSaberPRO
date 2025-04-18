@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Promedios Nacionales - Sistema Saber Pro</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .container {
+            width: 90%;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        header {
+            background-color: #003366;
+            color: white;
+            padding: 20px 0;
+        }
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 90%;
+            margin: 0 auto;
+        }
+        .user-info {
+            display: flex;
+            align-items: center;
+        }
+        .user-info span {
+            margin-right: 15px;
+        }
+        nav {
+            background-color: #004080;
+            padding: 10px 0;
+        }
+        nav ul {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+        }
+        nav ul li {
+            margin: 0 15px;
+        }
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+        }
+        nav ul li a:hover {
+            text-decoration: underline;
+        }
+        .content {
+            margin-top: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .card {
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .table-card {
+            flex: 1;
+            min-width: 500px;
+        }
+        .chart-card {
+            flex: 1;
+            min-width: 500px;
+        }
+        .btn {
+            display: inline-block;
+            background-color: #003366;
+            color: white;
+            padding: 8px 15px;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+        .btn:hover {
+            opacity: 0.9;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table th, table td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        table th {
+            background-color: #f2f2f2;
+        }
+        .chart-container {
+            height: 400px;
+            position: relative;
+        }
+        .bar {
+            position: absolute;
+            bottom: 40px;
+            width: 40px;
+            background-color: #003366;
+            transition: height 0.5s ease;
+            border-radius: 5px 5px 0 0;
+        }
+        .bar-label {
+            position: absolute;
+            bottom: 10px;
+            text-align: center;
+            width: 40px;
+            font-size: 12px;
+            color: #333;
+        }
+        .bar-value {
+            position: absolute;
+            top: -25px;
+            width: 40px;
+            text-align: center;
+            font-size: 12px;
+            color: #333;
+        }
+        .axis {
+            position: absolute;
+            bottom: 40px;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background-color: #333;
+        }
+        footer {
+            background-color: #003366;
+            color: white;
+            text-align: center;
+            padding: 10px 0;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <h1>Promedios Nacionales</h1>
+            <div class="user-info">
+                <a th:if="${session.coordinador}" href="/coordinador/inicio" class="btn">Volver al Inicio</a>
+                <a th:if="${session.estudiante}" href="/estudiante/inicio" class="btn">Volver al Inicio</a>
+            </div>
+        </div>
+    </header>
+    
+    <nav th:if="${session.coordinador}">
+        <ul>
+            <li><a href="/coordinador/inicio">Inicio</a></li>
+            <li><a href="/coordinador/estudiante/registro">Registrar Estudiante</a></li>
+            <li><a href="/coordinador/ranking">Ranking</a></li>
+            <li><a href="/coordinador/promedios">Promedios Nacionales</a></li>
+            <li><a href="/coordinador/registro">Registrar Coordinador</a></li>
+        </ul>
+    </nav>
+    
+    <nav th:if="${session.estudiante}">
+        <ul>
+            <li><a href="/estudiante/inicio">Inicio</a></li>
+            <li><a href="/estudiante/ranking">Ranking</a></li>
+            <li><a href="/estudiante/promedios">Promedios Nacionales</a></li>
+        </ul>
+    </nav>
+    
+    <div class="container">
+        <div class="content">
+            <div class="card table-card">
+                <h2>Promedios por Competencia</h2>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Competencia</th>
+                            <th>Promedio Nacional</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Puntaje</td>
+                            <td th:text="${#numbers.formatDecimal(promedios.puntaje, 1, 2)}"></td>
+                        </tr>
+                        <tr>
+                            <td>Comunicación Escrita (CE)</td>
+                            <td th:text="${#numbers.formatDecimal(promedios.CE, 1, 2)}"></td>
+                        </tr>
+                        <tr>
+                            <td>Razonamiento Cuantitativo (RC)</td>
+                            <td th:text="${#numbers.formatDecimal(promedios.RC, 1, 2)}"></td>
+                        </tr>
+                        <tr>
+                            <td>Lectura Crítica (LC)</td>
+                            <td th:text="${#numbers.formatDecimal(promedios.LC, 1, 2)}"></td>
+                        </tr>
+                        <tr>
+                            <td>Competencias Ciudadanas (CC)</td>
+                            <td th:text="${#numbers.formatDecimal(promedios.CC, 1, 2)}"></td>
+                        </tr>
+                        <tr>
+                            <td>Inglés (EN)</td>
+                            <td th:text="${#numbers.formatDecimal(promedios.EN, 1, 2)}"></td>
+                        </tr>
+                        <tr>
+                            <td>Formulación de Proyectos de Ingeniería (FPI)</td>
+                            <td th:text="${#numbers.formatDecimal(promedios.FPI, 1, 2)}"></td>
+                        </tr>
+                        <tr>
+                            <td>Pensamiento Científico y Matemáticas (PCME)</td>
+                            <td th:text="${#numbers.formatDecimal(promedios.PCME, 1, 2)}"></td>
+                        </tr>
+                        <tr>
+                            <td>Diseño de Software (DS)</td>
+                            <td th:text="${#numbers.formatDecimal(promedios.DS, 1, 2)}"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="card chart-card">
+                <h2>Gráfico de Promedios</h2>
+                
+                <div class="chart-container">
+                    <div class="axis"></div>
+                    
+                    <!-- Barras del gráfico -->
+                    <div class="bar" style="left: 30px;" th:style="'height:' + ${promedios.puntaje * 0.8} + 'px; left: 30px;'">
+                        <div class="bar-value" th:text="${#numbers.formatDecimal(promedios.puntaje, 1, 1)}"></div>
+                    </div>
+                    <div class="bar-label" style="left: 30px;">Global</div>
+                    
+                    <div class="bar" style="left: 90px;" th:style="'height:' + ${promedios.CE * 0.8} + 'px; left: 90px;'">
+                        <div class="bar-value" th:text="${#numbers.formatDecimal(promedios.CE, 1, 1)}"></div>
+                    </div>
+                    <div class="bar-label" style="left: 90px;">CE</div>
+                    
+                    <div class="bar" style="left: 150px;" th:style="'height:' + ${promedios.RC * 0.8} + 'px; left: 150px;'">
+                        <div class="bar-value" th:text="${#numbers.formatDecimal(promedios.RC, 1, 1)}"></div>
+                    </div>
+                    <div class="bar-label" style="left: 150px;">RC</div>
+                    
+                    <div class="bar" style="left: 210px;" th:style="'height:' + ${promedios.LC * 0.8} + 'px; left: 210px;'">
+                        <div class="bar-value" th:text="${#numbers.formatDecimal(promedios.LC, 1, 1)}"></div>
+                    </div>
+                    <div class="bar-label" style="left: 210px;">LC</div>
+                    
+                    <div class="bar" style="left: 270px;" th:style="'height:' + ${promedios.CC * 0.8} + 'px; left: 270px;'">
+                        <div class="bar-value" th:text="${#numbers.formatDecimal(promedios.CC, 1, 1)}"></div>
+                    </div>
+                    <div class="bar-label" style="left: 270px;">CC</div>
+                    
+                    <div class="bar" style="left: 330px;" th:style="'height:' + ${promedios.EN * 0.8} + 'px; left: 330px;'">
+                        <div class="bar-value" th:text="${#numbers.formatDecimal(promedios.EN, 1, 1)}"></div>
+                    </div>
+                    <div class="bar-label" style="left: 330px;">EN</div>
+                    
+                    <div class="bar" style="left: 390px;" th:style="'height:' + ${promedios.FPI * 0.8} + 'px; left: 390px;'">
+                        <div class="bar-value" th:text="${#numbers.formatDecimal(promedios.FPI, 1, 1)}"></div>
+                    </div>
+                    <div class="bar-label" style="left: 390px;">FPI</div>
+                    
+                    <div class="bar" style="left: 450px;" th:style="'height:' + ${promedios.PCME * 0.8} + 'px; left: 450px;'">
+                        <div class="bar-value" th:text="${#numbers.formatDecimal(promedios.PCME, 1, 1)}"></div>
+                    </div>
+                    <div class="bar-label" style="left: 450px;">PCME</div>
+                    
+                    <div class="bar" style="left: 510px;" th:style="'height:' + ${promedios.DS * 0.8} + 'px; left: 510px;'">
+                        <div class="bar-value" th:text="${#numbers.formatDecimal(promedios.DS, 1, 1)}"></div>
+                    </div>
+                    <div class="bar-label" style="left: 510px;">DS</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <p>&copy; 2025 Sistema de Gestión Saber Pro</p>
+    </footer>
+</body>
+</html>

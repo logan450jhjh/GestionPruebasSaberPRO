@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ranking de Estudiantes - Sistema Saber Pro</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .container {
+            width: 90%;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        header {
+            background-color: #003366;
+            color: white;
+            padding: 20px 0;
+        }
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 90%;
+            margin: 0 auto;
+        }
+        .user-info {
+            display: flex;
+            align-items: center;
+        }
+        .user-info span {
+            margin-right: 15px;
+        }
+        nav {
+            background-color: #004080;
+            padding: 10px 0;
+        }
+        nav ul {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+        }
+        nav ul li {
+            margin: 0 15px;
+        }
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+        }
+        nav ul li a:hover {
+            text-decoration: underline;
+        }
+        .content {
+            margin-top: 20px;
+        }
+        .card {
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .btn {
+            display: inline-block;
+            background-color: #003366;
+            color: white;
+            padding: 8px 15px;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+        .btn:hover {
+            opacity: 0.9;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table th, table td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        table th {
+            background-color: #f2f2f2;
+        }
+        .highlight {
+            background-color: #fffde7;
+        }
+        .rank {
+            font-weight: bold;
+            text-align: center;
+        }
+        .rank-1 {
+            color: gold;
+        }
+        .rank-2 {
+            color: silver;
+        }
+        .rank-3 {
+            color: #cd7f32; /* bronze */
+        }
+        .level {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 3px;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+        .level-1 {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .level-2 {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        .level-3 {
+            background-color: #d1ecf1;
+            color: #0c5460;
+        }
+        .level-4 {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        footer {
+            background-color: #003366;
+            color: white;
+            text-align: center;
+            padding: 10px 0;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <h1>Ranking de Estudiantes</h1>
+            <div class="user-info">
+                <a th:if="${session.coordinador}" href="/coordinador/inicio" class="btn">Volver al Inicio</a>
+                <a th:if="${session.estudiante}" href="/estudiante/inicio" class="btn">Volver al Inicio</a>
+            </div>
+        </div>
+    </header>
+    
+    <nav th:if="${session.coordinador}">
+        <ul>
+            <li><a href="/coordinador/inicio">Inicio</a></li>
+            <li><a href="/coordinador/estudiante/registro">Registrar Estudiante</a></li>
+            <li><a href="/coordinador/ranking">Ranking</a></li>
+            <li><a href="/coordinador/promedios">Promedios Nacionales</a></li>
+            <li><a href="/coordinador/registro">Registrar Coordinador</a></li>
+        </ul>
+    </nav>
+    
+    <nav th:if="${session.estudiante}">
+        <ul>
+            <li><a href="/estudiante/inicio">Inicio</a></li>
+            <li><a href="/estudiante/ranking">Ranking</a></li>
+            <li><a href="/estudiante/promedios">Promedios Nacionales</a></li>
+        </ul>
+    </nav>
+    
+    <div class="container">
+        <div class="content">
+            <div class="card">
+                <h2>Ranking Nacional por Puntaje Global</h2>
+                
+                <table>
+                    <thead>
+                        <tr>
+    <th>Posición</th>
+    <th>Nombre</th>
+    <th>Puntaje</th>
+    <th>Nivel</th>
+    <th>Estado</th>
+    <th th:if="${session.coordinador}">Acciones</th>
+</tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="estudiante, status : ${estudiantes}" 
+                            th:class="${estudianteActual != null && estudiante.id == estudianteActual.id ? 'highlight' : ''}">
+                            <td class="rank" 
+                                th:classappend="${status.count == 1 ? 'rank-1' : (status.count == 2 ? 'rank-2' : (status.count == 3 ? 'rank-3' : ''))}">
+                                <span th:text="${status.count}"></span>
+                            </td>
+                            <td th:text="${estudiante.primerNombre + ' ' + (estudiante.segundoNombre != null ? estudiante.segundoNombre : '') + ' ' + 
+                                          estudiante.primerApellido + ' ' + (estudiante.segundoApellido != null ? estudiante.segundoApellido : '')}"></td>
+                            <td th:text="${estudiante.puntaje}"></td>
+                            <td>
+                                <span th:if="${estudiante.nivelPuntaje}" 
+                                      th:class="${'level ' + (estudiante.nivelPuntaje == 'Nivel 1' ? 'level-1' : 
+                                                          (estudiante.nivelPuntaje == 'Nivel 2' ? 'level-2' : 
+                                                          (estudiante.nivelPuntaje == 'Nivel 3' ? 'level-3' : 'level-4')))}"
+                                      th:text="${estudiante.nivelPuntaje}"></span>
+                            </td>
+                            
+                            <td>
+    <span th:if="${estudiante.estadoAprobacion}" 
+          th:class="${'level ' + (estudiante.estadoAprobacion == 'Reprobado' ? 'level-1' : 'level-4')}"
+          th:text="${estudiante.estadoAprobacion}"></span>
+</td>
+                            <td th:if="${session.coordinador}">
+                                <a th:href="@{/coordinador/estudiante/detalle/{id}(id=${estudiante.id})}" class="btn">Ver Detalle</a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <p>&copy; 2025 Sistema de Gestión Saber Pro</p>
+    </footer>
+</body>
+</html>
