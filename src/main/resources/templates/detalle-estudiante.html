@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalle de Estudiante - Sistema Saber Pro</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .container {
+            width: 90%;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        header {
+            background-color: #003366;
+            color: white;
+            padding: 20px 0;
+        }
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 90%;
+            margin: 0 auto;
+        }
+        .user-info {
+            display: flex;
+            align-items: center;
+        }
+        .user-info span {
+            margin-right: 15px;
+        }
+        nav {
+            background-color: #004080;
+            padding: 10px 0;
+        }
+        nav ul {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+        }
+        nav ul li {
+            margin: 0 15px;
+        }
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+        }
+        nav ul li a:hover {
+            text-decoration: underline;
+        }
+        .content {
+            margin-top: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .card {
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .info-card {
+            flex: 1;
+            min-width: 300px;
+        }
+        .scores-card {
+            flex: 2;
+            min-width: 500px;
+        }
+        .info-item {
+            margin-bottom: 10px;
+        }
+        .info-item strong {
+            display: inline-block;
+            width: 150px;
+        }
+        .score-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .score-table th, .score-table td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        .score-table th {
+            background-color: #f2f2f2;
+        }
+        .level {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 3px;
+            font-weight: bold;
+        }
+        .level-1 {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .level-2 {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        .level-3 {
+            background-color: #d1ecf1;
+            color: #0c5460;
+        }
+        .level-4 {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .btn {
+            display: inline-block;
+            background-color: #003366;
+            color: white;
+            padding: 8px 15px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-right: 5px;
+        }
+        .btn-danger {
+            background-color: #dc3545;
+        }
+        .btn:hover {
+            opacity: 0.9;
+        }
+        .actions {
+            margin-top: 20px;
+        }
+        footer {
+            background-color: #003366;
+            color: white;
+            text-align: center;
+            padding: 10px 0;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <h1>Detalle de Estudiante</h1>
+            <div class="user-info">
+                <a href="/coordinador/inicio" class="btn">Volver al Inicio</a>
+            </div>
+        </div>
+    </header>
+    
+    <nav>
+        <ul>
+            <li><a href="/coordinador/inicio">Inicio</a></li>
+            <li><a href="/coordinador/estudiante/registro">Registrar Estudiante</a></li>
+            <li><a href="/coordinador/ranking">Ranking</a></li>
+            <li><a href="/coordinador/promedios">Promedios Nacionales</a></li>
+            <li><a href="/coordinador/registro">Registrar Coordinador</a></li>
+        </ul>
+    </nav>
+    
+    <div class="container">
+        <div class="content">
+        
+        <!-- Alerta si el estudiante está anulado -->
+    <div th:if="${estudiante.anulado}" class="alert alert-danger">
+        <strong>ESTUDIANTE ANULADO</strong> - No se muestran los puntajes.
+    </div>
+            <div class="card info-card">
+                <h2>Información Personal</h2>
+                
+                <div class="info-item">
+                    <strong>Documento:</strong>
+                    <span th:text="${estudiante.tipoDocumento + ' ' + estudiante.cedula}"></span>
+                </div>
+                
+                <div class="info-item">
+                    <strong>Nombre Completo:</strong>
+                    <span th:text="${estudiante.primerNombre + ' ' + (estudiante.segundoNombre != null ? estudiante.segundoNombre : '') + ' ' + 
+                                    estudiante.primerApellido + ' ' + (estudiante.segundoApellido != null ? estudiante.segundoApellido : '')}"></span>
+                </div>
+                
+                <div class="info-item">
+                    <strong>Correo Electrónico:</strong>
+                    <span th:text="${estudiante.email}"></span>
+                </div>
+                
+                <div class="info-item">
+                    <strong>Teléfono:</strong>
+                    <span th:text="${estudiante.telefono}"></span>
+                </div>
+                
+                <div class="info-item">
+                    <strong>Registro:</strong>
+                    <span th:text="${estudiante.registro}"></span>
+                </div>
+            </div>
+            
+            <div th:if="${!estudiante.anulado}" class="card scores-card">
+    <!-- Aquí dentro va TODO el contenido de resultados Saber Pro -->
+    <div class="card scores-card">
+                <h2>Resultados Saber Pro</h2>
+                
+                <div class="info-item">
+                    <strong>Puntaje:</strong>
+                    <span th:text="${estudiante.puntaje}"></span>
+                    <span th:if="${estudiante.nivelPuntaje}" 
+                          th:class="${'level ' + (estudiante.nivelPuntaje == 'Nivel 1' ? 'level-1' : 
+                                              (estudiante.nivelPuntaje == 'Nivel 2' ? 'level-2' : 
+                                              (estudiante.nivelPuntaje == 'Nivel 3' ? 'level-3' : 'level-4')))}"
+                          th:text="${estudiante.nivelPuntaje}"></span>
+                    
+                </div>
+      <div class="info-item">
+    <strong>Estado:</strong>
+    <span th:if="${estudiante.anulado}" class="level level-1">Anulado</span>
+    <span th:if="${!estudiante.anulado && estudiante.estadoAprobacion == 'Aprobado'}" 
+      th:class="'level level-4'"
+      th:text="${estudiante.estadoAprobacion}"></span>
+</div>
+                
+                <table class="score-table">
+                    <thead>
+                        <tr>
+                            <th>Competencia</th>
+                            <th>Puntaje</th>
+                            <th>Nivel</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Comunicación Escrita (CE)</td>
+                            <td th:text="${estudiante.CE}"></td>
+                            <td>
+                                <span th:if="${estudiante.lvlCE}" 
+                                      th:class="${'level ' + (estudiante.lvlCE == 'Nivel 1' ? 'level-1' : 
+                                                          (estudiante.lvlCE == 'Nivel 2' ? 'level-2' : 
+                                                          (estudiante.lvlCE == 'Nivel 3' ? 'level-3' : 'level-4')))}"
+                                      th:text="${estudiante.lvlCE}"></span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Razonamiento Cuantitativo (RC)</td>
+                            <td th:text="${estudiante.RC}"></td>
+                            <td>
+                                <span th:if="${estudiante.lvlRC}" 
+                                      th:class="${'level ' + (estudiante.lvlRC == 'Nivel 1' ? 'level-1' : 
+                                                          (estudiante.lvlRC == 'Nivel 2' ? 'level-2' : 
+                                                          (estudiante.lvlRC == 'Nivel 3' ? 'level-3' : 'level-4')))}"
+                                      th:text="${estudiante.lvlRC}"></span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Lectura Crítica (LC)</td>
+                            <td th:text="${estudiante.LC}"></td>
+                            <td>
+                                <span th:if="${estudiante.lvlLC}" 
+                                      th:class="${'level ' + (estudiante.lvlLC == 'Nivel 1' ? 'level-1' : 
+                                                          (estudiante.lvlLC == 'Nivel 2' ? 'level-2' : 
+                                                          (estudiante.lvlLC == 'Nivel 3' ? 'level-3' : 'level-4')))}"
+                                      th:text="${estudiante.lvlLC}"></span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Competencias Ciudadanas (CC)</td>
+                            <td th:text="${estudiante.CC}"></td>
+                            <td>
+                                <span th:if="${estudiante.lvlCC}" 
+                                      th:class="${'level ' + (estudiante.lvlCC == 'Nivel 1' ? 'level-1' : 
+                                                          (estudiante.lvlCC == 'Nivel 2' ? 'level-2' : 
+                                                          (estudiante.lvlCC == 'Nivel 3' ? 'level-3' : 'level-4')))}"
+                                      th:text="${estudiante.lvlCC}"></span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Inglés (EN)</td>
+                            <td th:text="${estudiante.EN}"></td>
+                            <td>
+                                <span th:if="${estudiante.lvlEN}" 
+                                      th:class="${'level ' + (estudiante.lvlEN == 'Nivel 1' ? 'level-1' : 
+                                                          (estudiante.lvlEN == 'Nivel 2' ? 'level-2' : 
+                                                          (estudiante.lvlEN == 'Nivel 3' ? 'level-3' : 'level-4')))}"
+                                      th:text="${estudiante.lvlEN}"></span>
+                                <span th:if="${estudiante.nivelIngles}" 
+                                      th:text="${' (' + estudiante.nivelIngles + ')'}"></span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Formulación de Proyectos de Ingeniería (FPI)</td>
+                            <td th:text="${estudiante.FPI}"></td>
+                            <td>
+                                <span th:if="${estudiante.lvlFPI}" 
+                                      th:class="${'level ' + (estudiante.lvlFPI == 'Nivel 1' ? 'level-1' : 
+                                                          (estudiante.lvlFPI == 'Nivel 2' ? 'level-2' : 
+                                                          (estudiante.lvlFPI == 'Nivel 3' ? 'level-3' : 'level-4')))}"
+                                      th:text="${estudiante.lvlFPI}"></span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Pensamiento Científico y Matemáticas (PCME)</td>
+                            <td th:text="${estudiante.PCME}"></td>
+                            <td>
+                                <span th:if="${estudiante.lvlPCME}" 
+                                      th:class="${'level ' + (estudiante.lvlPCME == 'Nivel 1' ? 'level-1' : 
+                                                          (estudiante.lvlPCME == 'Nivel 2' ? 'level-2' : 
+                                                          (estudiante.lvlPCME == 'Nivel 3' ? 'level-3' : 'level-4')))}"
+                                      th:text="${estudiante.lvlPCME}"></span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Diseño de Software (DS)</td>
+                            <td th:text="${estudiante.DS}"></td>
+                            <td>
+                                <span th:if="${estudiante.lvlDS}" 
+                                      th:class="${'level ' + (estudiante.lvlDS == 'Nivel 1' ? 'level-1' : 
+                                                          (estudiante.lvlDS == 'Nivel 2' ? 'level-2' : 
+                                                          (estudiante.lvlDS == 'Nivel 3' ? 'level-3' : 'level-4')))}"
+                                      th:text="${estudiante.lvlDS}"></span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+</div>
+            
+        </div>
+    </div>
+    
+    <footer>
+        <p>&copy; 2025 Sistema de Gestión Saber Pro</p>
+    </footer>
+</body>
+</html>
